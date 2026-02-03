@@ -1,12 +1,18 @@
-import "reflect-metadata"
-import { DataSource } from "typeorm"
-import { User } from "./entity/User"
+import "reflect-metadata";
+import { DataSource } from "typeorm";
+import { Usuario } from "./entities/Usuarios";
+import { Clientes } from "./entities/Clientes";
+import { Categorias } from "./entities/Categorias";
+import { Productos } from "./entities/Productos";
 
 export const AppDataSource = new DataSource({
-    
-    synchronize: true,
-    logging: false,
-    entities: [User],
-    migrations: [],
-    subscribers: [],
-})
+  type: "mysql",
+  host: "localhost",
+  port: 3306,
+  username: "root",
+  password: "4BraroApi2026", // ajusta
+  database: "braroapirest", // crea esta DB
+  synchronize: false, // solo desarrollo
+  logging: false,
+  entities: [Usuario, Categorias, Clientes, Productos],
+});
