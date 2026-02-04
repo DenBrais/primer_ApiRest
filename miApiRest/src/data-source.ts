@@ -10,7 +10,8 @@ export const AppDataSource = new DataSource({
   host: "localhost",
   port: 3306,
   username: "root",
-  password: "4BraroApi2026", // ajusta
+  //password: "4BraroApi2026", // ajusta
+  password: "4BraroDev2026",
   database: "braroapirest", // crea esta DB
   synchronize: false, // solo desarrollo
   logging: false,

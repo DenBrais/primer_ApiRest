@@ -3,6 +3,9 @@ import { ClientesController } from "../controllers/clientesController";
 
 const ROUTES = Router();
 
-ROUTES.use("/", ClientesController.getAllClients);
-
+ROUTES.get("/", ClientesController.getAllClientes);
+ROUTES.get("/:id", ClientesController.getClienteById);
+ROUTES.post("/ :id", ClientesController.createCliente);
+ROUTES.patch("/:id", ClientesController.updateCliente);
+ROUTES.delete("/:id", ClientesController.deleteCliente);
 export default ROUTES;
