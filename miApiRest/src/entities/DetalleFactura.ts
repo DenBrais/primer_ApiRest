@@ -11,5 +11,7 @@ export class DetalleFactura {
   cantidad: number;
 
   @Column({ type: "decimal", precision: 10, scale: 2 })
-  total: number;
+  subTotal: number;
+
+  
 }

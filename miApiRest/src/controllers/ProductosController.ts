@@ -79,18 +79,36 @@ export class ProductosController {
   //metodo read one
   static getProductoById = async (req: Request, res: Response) => {
     // Lógica para obtener un producto por ID
-    res.status(200).json({ message: "Obtener un producto por ID" });
+    try {
+      res.status(200).json({ message: "Obtener un producto por ID" });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ message: "Error al obtener el producto por ID" });
+    }
   };
 
   //metod update
   static updateProducto = async (req: Request, res: Response) => {
     // Lógica para actualizar un producto
-    res.status(200).json({ message: "Actualizar un producto" });
+    try {
+      res.status(200).json({ message: "Actualizar un producto" });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ message: "Error al actualizar el producto" });
+    }
   };
 
   //metodo delete
   static deleteProducto = async (req: Request, res: Response) => {
     // Lógica para eliminar un producto
-    res.status(200).json({ message: "Eliminar un producto" });
+    try {
+      res.status(200).json({ message: "Eliminar un producto" });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ message: "Error al eliminar el producto" });
+    }
   };
 }

@@ -1,4 +1,4 @@
-import { Column, Entity } from "typeorm";
+import { Column, Entity, ForeignKey } from "typeorm";
 import { PrimaryGeneratedColumn } from "typeorm/decorator/columns/PrimaryGeneratedColumn";
 
 @Entity({ name: "tbFacturas" })
@@ -7,10 +7,14 @@ export class Factura {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @ForeignKey(() => Clientes)
+  @Column({ type: "varchar", length: 9, nullable: false })
+  idCliente: string;
+  
   @Column({ type: "date", nullable: false })
   fecha: Date;
-  @Column()
-  idCliente: string;
+
+  
   @Column()
   estado: boolean;
 }
