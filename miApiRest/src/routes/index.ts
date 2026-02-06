@@ -3,7 +3,7 @@ import categorias from "./categorias";
 import usuarios from "./usuarios";
 import clientes from "./clientes";
 import productos from "./pruductos";
-import auth from "./Auth";
+import auth from "./auth";
 
 const ROUTES = Router();
 ROUTES.use("/categorias", categorias);

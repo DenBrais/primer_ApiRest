@@ -8,19 +8,19 @@ import {
 
 @Entity({ name: "tbClientes" })
 export class Clientes {
-  @PrimaryColumn()
-  id: number;
+  @PrimaryColumn({ length: 9 })
+  id: string;
 
-  @Column({ type: "varchar", length: 100 , nullable: false})
+  @Column({ type: "varchar", length: 100, nullable: false })
   nombre: string;
 
-  @Column({ type: "varchar", length: 100 , nullable: false})
+  @Column({ type: "varchar", length: 100, nullable: false })
   apellido1: string;
 
-  @Column({ type: "varchar", length: 100 , nullable: false})
+  @Column({ type: "varchar", length: 100, nullable: false })
   apellido2: string;
 
-  @Column({ type: "varchar", length: 100, unique: true , nullable: false})
+  @Column({ type: "varchar", length: 100, unique: true, nullable: false })
   email: string;
 
   @Column({ type: "varchar", length: 20, nullable: false })

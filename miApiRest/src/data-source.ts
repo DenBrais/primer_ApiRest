@@ -4,6 +4,8 @@ import { Usuario } from "./entities/Usuarios";
 import { Clientes } from "./entities/Clientes";
 import { Categorias } from "./entities/Categorias";
 import { Productos } from "./entities/Productos";
+import { Factura } from "./entities/Factura";
+import { DetalleFactura } from "./entities/DetalleFactura";
 
 export const AppDataSource = new DataSource({
   type: "mysql",
@@ -15,5 +17,5 @@ export const AppDataSource = new DataSource({
   database: "braroapirest", // crea esta DB
   synchronize: false, // solo desarrollo
   logging: false,
-  entities: [Usuario, Categorias, Clientes, Productos],
+  entities: [Usuario, Categorias, Clientes, Productos, Factura, DetalleFactura],
 });

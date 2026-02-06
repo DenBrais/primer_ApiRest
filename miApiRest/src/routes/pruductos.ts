@@ -3,6 +3,10 @@ import { ProductosController } from "../controllers/ProductosController";
 
 const ROUTES = Router();
 
-ROUTES.use("/", ProductosController.getAllProducts);
+ROUTES.post("/", ProductosController.createProducto);
+ROUTES.get("/", ProductosController.getAllProductos);
+ROUTES.get("/:id", ProductosController.getProductoById);
+ROUTES.patch("/:id", ProductosController.updateProducto);
+ROUTES.delete("/:id", ProductosController.deleteProducto);
 
 export default ROUTES;
