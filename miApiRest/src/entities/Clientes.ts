@@ -4,7 +4,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   PrimaryColumn,
+  OneToMany,
 } from "typeorm";
+import { Factura } from "./Factura";
 
 @Entity({ name: "tbClientes" })
 export class Clientes {
@@ -34,4 +36,7 @@ export class Clientes {
 
   @UpdateDateColumn()
   fechaActualizacion: Date;
+
+  @OneToMany(() => Factura, (factura) => factura.cliente)
+  facturas: Factura[];
 }

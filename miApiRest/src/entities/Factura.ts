@@ -1,5 +1,7 @@
-import { Column, Entity, ForeignKey } from "typeorm";
+import { Column, Entity, ForeignKey, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 import { PrimaryGeneratedColumn } from "typeorm/decorator/columns/PrimaryGeneratedColumn";
+import { Clientes } from "./Clientes";
+import { DetalleFactura } from "./DetalleFactura";
 
 @Entity({ name: "tbFacturas" })
 export class Factura {
@@ -17,4 +19,10 @@ export class Factura {
   
   @Column()
   estado: boolean;
+  @ManyToOne(() => Clientes, (cliente) => cliente.facturas)
+  @JoinColumn({ name: "idCliente" })
+  cliente: Clientes;
+
+  @OneToMany(() => DetalleFactura, (detalle) => detalle.factura)
+  detalles: DetalleFactura[];
 }

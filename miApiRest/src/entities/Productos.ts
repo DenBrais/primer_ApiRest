@@ -4,7 +4,11 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
 } from "typeorm";
+import { DetalleFactura } from "./DetalleFactura";
 
 @Entity({ name: "tbProductos" })
 export class Productos {
@@ -34,4 +38,7 @@ export class Productos {
 
   @UpdateDateColumn()
   fechaActualizacion: Date;
+
+  @OneToMany(() => DetalleFactura, (detalle) => detalle.producto)
+  detalles: DetalleFactura[];
 }
