@@ -16,6 +16,14 @@ export class Factura {
   @Column({ type: "date", nullable: false })
   fecha: Date;
 
+  @Column()
+  subTotalFact: number;
+
+  @Column({ type: "decimal", precision: 10, scale: 2, default: 0.13 })
+  impuestoAPagar: number;
+
+  @Column()
+  total: number;
   
   @Column()
   estado: boolean;
@@ -23,6 +31,9 @@ export class Factura {
   @JoinColumn({ name: "idCliente" })
   cliente: Clientes;
 
-  @OneToMany(() => DetalleFactura, (detalle) => detalle.factura)
+  @OneToMany(() => DetalleFactura, (detalle) => detalle.factura, {
+    cascade: ["insert", "update"], // clave: guarda detalles al guardar factura
+    eager: true}// carga automática de detalles con la factura
+  ) 
   detalles: DetalleFactura[];
 }

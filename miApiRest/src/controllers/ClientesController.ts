@@ -10,54 +10,60 @@ export class ClientesController {
       const { nombre, apellido1, apellido2, email, telefono } = req.body;
       const { id } = req.params;
 
-      //validaciones de entrada
-      //valido id obligatiorio y numérico
-      if (!id || isNaN(Number(id))) {
-        return res.status(400).json({
-          message: "El id del cliente es obligatorio y debe ser un número",
-        });
-      }
-      //valido nombre obligatorio
-      if (!nombre || nombre.length === 0) {
-        return res
-          .status(400)
-          .json({ message: "El nombre del cliente es obligatorio" });
-      }
+      /*validaciones de entrada*/
 
-      //valido apellido1 y apellido2 obligatorios
-      if (!apellido1 || apellido1.length === 0) {
-        return res
-          .status(400)
-          .json({ message: "El primer apellido del cliente es obligatorio" });
-      }
-      if (!apellido2 || apellido2.length === 0) {
-        return res
-          .status(400)
-          .json({ message: "El segundo apellido del cliente es obligatorio" });
-      }
+        //valido id obligatiorio y numérico
+        if (!id || isNaN(Number(id))) {
+          return res.status(400).json({
+            message: "El id del cliente es obligatorio y debe ser un número",
+          });
+        }
+        //valido nombre obligatorio
+        if (!nombre || nombre.length === 0) {
+          return res
+            .status(400)
+            .json({ message: "El nombre del cliente es obligatorio" });
+        }
 
-      //valido email obligatorio y formato básico
-      if (!email || email.length === 0) {
-        return res
-          .status(400)
-          .json({ message: "El email del cliente es obligatorio" });
-      }
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        return res
-          .status(400)
-          .json({ message: "El formato del email es inválido" });
-      }
+        //valido apellido1 y apellido2 obligatorios
+        if (!apellido1 || apellido1.length === 0) {
+          return res
+            .status(400)
+            .json({ message: "El primer apellido del cliente es obligatorio" });
+        }
+        if (!apellido2 || apellido2.length === 0) {
+          return res
+            .status(400)
+            .json({ message: "El segundo apellido del cliente es obligatorio" });
+        }
 
-      //reglas de negocio
-      //accedo al repositorio de clientes
-      const repo = AppDataSource.getRepository("Clientes");
-      const clienteExistente = await repo.findOneBy({ id: Number(id) });
+        //valido email obligatorio y formato básico
+        if (!email || email.length === 0) {
+          return res
+            .status(400)
+            .json({ message: "El email del cliente es obligatorio" });
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          return res
+            .status(400)
+            .json({ message: "El formato del email es inválido" });
+        }
 
-      //valido si el id ya existe
-      if (clienteExistente) {
-        return res.status(400).json({ message: "El id del cliente ya existe" });
-      }
+      /*reglas de negocio*/
+
+        //busco el cliente clientes
+        const repo = AppDataSource.getRepository("Clientes");
+        const clienteExistente = await repo.findOneBy({ id: Number(id)});
+
+        //valido si el id ya existe
+        if (clienteExistente) {
+          //verifico si el cliente existente está inactivo
+          if (!clienteExistente.estado) {
+            //si está inactivo, permito reutilizar el id
+            return res.status(400).json({ message: "El id del cliente ya existe y está inactivo" });
+          }          
+        }
 
       //si no existe, creo el nuevo cliente
       const nuevoCliente = repo.create({
@@ -73,7 +79,8 @@ export class ClientesController {
       await repo.save(nuevoCliente);
 
       //devuelvo el nuevo cliente creado
-      return res.status(201).json(nuevoCliente);
+      return res.status(201).json({ message: "Cliente creado con éxito", cliente: nuevoCliente });
+
     } catch (error) {
       return res.status(500).json({ message: "Error al crear el cliente" });
     }
@@ -134,18 +141,23 @@ export class ClientesController {
       //destructuración del body
       const { nombre, apellido1, apellido2, email, telefono } = req.body;
 
-      //validaciones de entrada
+      /*validaciones de entrada*/
+
+        //valido id obligatiorio y numérico
       if (!id || isNaN(Number(id))) {
         return res.status(400).json({
           message: "El id del cliente es obligatorio y debe ser un número",
         });
       }
 
+      //valido nombre obligatorio
       if (!nombre || nombre.length === 0) {
         return res
           .status(400)
           .json({ message: "El nombre del cliente es obligatorio" });
       }
+
+      //valido apellido1 y apellido2 obligatorios
       if (!apellido1 || apellido1.length === 0) {
         return res
           .status(400)
@@ -156,16 +168,34 @@ export class ClientesController {
           .status(400)
           .json({ message: "El segundo apellido del cliente es obligatorio" });
       }
+
+      //valido email obligatorio y formato básico
       if (!email || email.length === 0) {
         return res
           .status(400)
           .json({ message: "El email del cliente es obligatorio" });
       }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res
+          .status(400)
+          .json({ message: "El formato del email es inválido" });
+      }
+
+      //valido teléfono obligatorio y formato básico (solo dígitos, guiones, espacios y paréntesis)
       if (!telefono || telefono.length === 0) {
         return res
           .status(400)
           .json({ message: "El teléfono del cliente es obligatorio" });
       }
+      const telefonoRegex = /^[0-9\s\-()]+$/;
+      if (!telefonoRegex.test(telefono)) {
+        return res
+          .status(400)
+          .json({ message: "El formato del teléfono es inválido" });
+      }
+
+      /*reglas de negocio*/
 
       //accedo al repositorio de clientes
       const repo = AppDataSource.getRepository("Clientes");
@@ -262,5 +292,47 @@ export class ClientesController {
     } catch (error) {
       return res.status(500).json({ message: "Error al eliminar el cliente" });
     }
+  };
+
+  //metodo de reactivar cliente
+  static reactivateCliente = async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+
+      /*validaciones de entrada*/
+        //valido id
+        if (!id || isNaN(Number(id))) {
+          return res.status(400).json({
+            message: "El id del cliente es obligatorio y debe ser un número",
+          });
+        }
+
+        //accedo al repositorio de clientes
+        const repo = AppDataSource.getRepository("Clientes");
+        const clienteExistente = await repo.findOneBy({
+          id: Number(id),
+          estado: false,
+        });
+
+        //verifico si el cliente existe y está inactivo
+        if (!clienteExistente) {
+          return res.status(404).json({
+            message: `El cliente con id ${id} no existe o ya está activo`,
+          });
+        }
+
+        //reactivo el cliente
+        clienteExistente.estado = true;
+
+        //guardo los cambios
+        await repo.save(clienteExistente);
+
+        //devuelvo una respuesta de éxito
+        return res.status(200).json({
+          message: `Cliente con id ${id} reactivado correctamente`,
+        });
+      } catch (error) {
+        return res.status(500).json({ message: "Error al reactivar el cliente" });
+      }
   };
 }

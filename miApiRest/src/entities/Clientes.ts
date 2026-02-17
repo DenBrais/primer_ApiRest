@@ -29,7 +29,7 @@ export class Clientes {
   telefono: string;
 
   @Column({ type: "boolean", default: true })
-  activo: boolean;
+  estado: boolean;
 
   @CreateDateColumn()
   fechaCreacion: Date;

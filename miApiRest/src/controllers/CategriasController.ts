@@ -38,7 +38,7 @@ class CategoriasController {
   };
 
   //metodo read all
-  static getAllCategories = async (req: Request, res: Response) => {
+  static getAllCategories = async (_req: Request, res: Response) => {
     // Lógica para obtener todas las categorías
     try {
       const repo = AppDataSource.getRepository(Categorias);
@@ -49,6 +49,7 @@ class CategoriasController {
           .status(404)
           .json({ message: "No hay categorias registradas" });
       }
+      
       //ENVIO LA LISTA DE CATEGORIAS DTOS
       return res
         .status(200)

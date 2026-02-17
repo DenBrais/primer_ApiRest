@@ -3,12 +3,10 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToMany,
   PrimaryColumn,
 } from "typeorm";
 import { Factura } from "./Factura";
 import { Productos } from "./Productos";
-import { join } from "node:path";
 
 @Entity({ name: "tbDetalleFactura" })
 export class DetalleFactura {
@@ -24,7 +22,7 @@ export class DetalleFactura {
   precioUnitario: number;
 
   @Column({ type: "decimal", precision: 10, scale: 2 })
-  subTotal: number;
+  subTotalDet: number;
 
   @ManyToOne(() => Factura, (factura) => factura.detalles)
   @JoinColumn({ name: "idFactura" })
