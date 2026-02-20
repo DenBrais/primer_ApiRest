@@ -1,11 +1,4 @@
-import {
-  Column,
-  Entity,
-  ForeignKey,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-} from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 import { PrimaryGeneratedColumn } from "typeorm/decorator/columns/PrimaryGeneratedColumn";
 import { Clientes } from "./Clientes";
 import { DetalleFactura } from "./DetalleFactura";
@@ -16,7 +9,6 @@ export class Factura {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ForeignKey(() => Clientes)
   @Column({ type: "varchar", length: 9, nullable: false })
   idCliente: string;
 

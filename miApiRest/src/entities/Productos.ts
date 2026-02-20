@@ -7,13 +7,19 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
+  ForeignKey,
 } from "typeorm";
 import { DetalleFactura } from "./DetalleFactura";
+import { Categorias } from "./Categorias";
 
 @Entity({ name: "tbProductos" })
 export class Productos {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @ForeignKey(() => Categorias)
+  @Column({ type: "int", nullable: false })
+  idCategoria: number;
 
   @Column({ type: "varchar", length: 150, nullable: false })
   nombre: string;
@@ -41,4 +47,7 @@ export class Productos {
 
   @OneToMany(() => DetalleFactura, (detalle) => detalle.producto)
   detalles: DetalleFactura[];
+
+  @ManyToOne(() => Categorias, (categoria) => categoria.productos)
+  categoria: Categorias;
 }
