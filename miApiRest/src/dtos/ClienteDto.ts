@@ -1,7 +1,8 @@
 import { IsString, IsNotEmpty, MaxLength, IsEmail } from "class-validator";
 
 //Dto para el response
-export class ClienteResposeDto {
+export class ClienteResponseDto {
+  id!: string;
   nombre!: string;
   apellido1!: string;
   apellido2!: string;

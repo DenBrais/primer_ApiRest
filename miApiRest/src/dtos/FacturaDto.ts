@@ -1,6 +1,14 @@
 import { IsNotEmpty, IsNumber, Max } from "class-validator";
 
 //Dtos para respuonse
+export class DetalleFacturaResponseDto {
+  idFactura!: number;
+  idProducto!: number;
+  cantidad!: number;
+  precioUnitario!: number;
+  subTotalDet!: number;
+}
+
 export class FacturaResponseDto {
   id!: number;
   idCliente!: string;
@@ -8,6 +16,7 @@ export class FacturaResponseDto {
   subTotalFact!: number;
   impuestoAPagar!: number;
   total!: number;
+  detalles!: DetalleFacturaResponseDto[];
 }
 
 //Dto para creacion

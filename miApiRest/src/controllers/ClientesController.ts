@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import { AppDataSource } from "../data-source";
+import { ClienteMapper } from "../mappers/ClienteMappers";
+import { Clientes } from "../entities/Clientes"; 
 
 export class ClientesController {
   //metodo create
@@ -8,14 +10,14 @@ export class ClientesController {
     try {
       //destructuro los datos del body y los parametros
       const { nombre, apellido1, apellido2, email, telefono } = req.body;
-      const { id } = req.params;
+      const id = String(req.params.id ?? "").trim();
 
       /*validaciones de entrada*/
 
-        //valido id obligatiorio y numérico
-        if (!id || isNaN(Number(id))) {
+        //valido id obligatiorio
+        if (!id) {
           return res.status(400).json({
-            message: "El id del cliente es obligatorio y debe ser un número",
+            message: "El id del cliente es obligatorio",
           });
         }
         //valido nombre obligatorio
@@ -53,8 +55,8 @@ export class ClientesController {
       /*reglas de negocio*/
 
         //busco el cliente clientes
-        const repo = AppDataSource.getRepository("Clientes");
-        const clienteExistente = await repo.findOneBy({ id: Number(id)});
+        const repo = AppDataSource.getRepository(Clientes);
+        const clienteExistente = await repo.findOneBy({ id: id });
 
         //valido si el id ya existe
         if (clienteExistente) {
@@ -67,7 +69,7 @@ export class ClientesController {
 
       //si no existe, creo el nuevo cliente
       const nuevoCliente = repo.create({
-        id: Number(id),
+        id: id,
         nombre: nombre,
         apellido1: apellido1,
         apellido2: apellido2,
@@ -90,14 +92,14 @@ export class ClientesController {
   static getAllClientes = async (req: Request, res: Response) => {
     // Lógica para obtener todas las categorías
     try {
-      const repo = AppDataSource.getRepository("Clientes");
+      const repo = AppDataSource.getRepository(Clientes);
       const ListaClientes = await repo.find({ where: { estado: true } });
 
       if (ListaClientes.length === 0) {
         return res.status(404).json({ message: "No hay clientes registrados" });
       }
       //ENVIO LA LISTA DE CLIENTES DTOS
-      return res.status(200).json(ListaClientes);
+      return res.status(200).json(ClienteMapper.toResponseDtoList(ListaClientes));
     } catch (error) {
       return res.status(500).json({ message: "Error al obtener los clientes" });
     }
@@ -107,18 +109,18 @@ export class ClientesController {
   static getClienteById = async (req: Request, res: Response) => {
     try {
       //destructuración del id en este caso en los parámetros
-      const { id } = req.params;
+      const id = String(req.params.id ?? "").trim();
 
-      //validar si el id viene vacío o no es un número
-      if (!id || isNaN(Number(id))) {
+      //validar si el id viene vacío
+      if (!id) {
         return res.status(400).json({
-          message: "El id del cliente es obligatorio y debe ser un número",
+          message: "El id del cliente es obligatorio",
         });
       }
 
       // accedo al repositorio de clientes
-      const repo = AppDataSource.getRepository("Clientes");
-      const cliente = await repo.findOneBy({ id: Number(id), estado: true });
+      const repo = AppDataSource.getRepository(Clientes);
+      const cliente = await repo.findOneBy({ id: id, estado: true });
 
       if (!cliente) {
         return res
@@ -126,7 +128,7 @@ export class ClientesController {
           .json({ message: `El cliente con id ${id} no existe` });
       }
 
-      res.status(200).json(cliente);
+      res.status(200).json(ClienteMapper.toResponseDto(cliente));
     } catch (error) {
       return res.status(500).json({ message: "Error al obtener el cliente" });
     }
@@ -136,17 +138,17 @@ export class ClientesController {
   static updateCliente = async (req: Request, res: Response) => {
     try {
       //destructuración del id en este caso en los parámetros
-      const { id } = req.params;
+      const id = String(req.params.id ?? "").trim();
 
       //destructuración del body
       const { nombre, apellido1, apellido2, email, telefono } = req.body;
 
       /*validaciones de entrada*/
 
-        //valido id obligatiorio y numérico
-      if (!id || isNaN(Number(id))) {
+        //valido id obligatiorio
+      if (!id) {
         return res.status(400).json({
-          message: "El id del cliente es obligatorio y debe ser un número",
+          message: "El id del cliente es obligatorio",
         });
       }
 
@@ -200,7 +202,7 @@ export class ClientesController {
       //accedo al repositorio de clientes
       const repo = AppDataSource.getRepository("Clientes");
       const clienteExistente = await repo.findOneBy({
-        id: Number(id),
+        id: id,
         estado: true,
       });
 
@@ -214,7 +216,7 @@ export class ClientesController {
       //verifico si existe otro cliente con el mismo email
       const emailExistente = await repo.findOneBy({
         email: email,
-        id: Number(id),
+        id: id,
         estado: true,
       });
       if (emailExistente) {
@@ -226,7 +228,7 @@ export class ClientesController {
       //verifico otro cliente con mismo teléfono
       const telefonoExistente = await repo.findOneBy({
         telefono: telefono,
-        id: Number(id),
+        id: id,
         estado: true,
       });
       if (telefonoExistente) {
@@ -257,18 +259,18 @@ export class ClientesController {
   //metodo delete
   static deleteCliente = async (req: Request, res: Response) => {
     try {
-      const { id } = req.params;
+      const id = String(req.params.id ?? "").trim();
       //validaciones de entrada
-      if (!id || isNaN(Number(id))) {
+      if (!id) {
         return res.status(400).json({
-          message: "El id del cliente es obligatorio y debe ser un número",
+          message: "El id del cliente es obligatorio",
         });
       }
 
       //accedo al repositorio de clientes
       const repo = AppDataSource.getRepository("Clientes");
       const clienteExistente = await repo.findOneBy({
-        id: Number(id),
+        id: id,
         estado: true,
       });
 
@@ -297,20 +299,20 @@ export class ClientesController {
   //metodo de reactivar cliente
   static reactivateCliente = async (req: Request, res: Response) => {
     try {
-      const { id } = req.params;
+      const id = String(req.params.id ?? "").trim();
 
       /*validaciones de entrada*/
         //valido id
-        if (!id || isNaN(Number(id))) {
+        if (!id) {
           return res.status(400).json({
-            message: "El id del cliente es obligatorio y debe ser un número",
+            message: "El id del cliente es obligatorio",
           });
         }
 
         //accedo al repositorio de clientes
         const repo = AppDataSource.getRepository("Clientes");
         const clienteExistente = await repo.findOneBy({
-          id: Number(id),
+          id: id,
           estado: false,
         });
 

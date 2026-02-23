@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
-import { Usuario } from "./entities/Usuarios";
+import { Usuarios } from "./entities/Usuarios";
 import { Clientes } from "./entities/Clientes";
 import { Categorias } from "./entities/Categorias";
 import { Productos } from "./entities/Productos";
@@ -17,5 +17,12 @@ export const AppDataSource = new DataSource({
   database: "braroapirest", // crea esta DB
   synchronize: false, // solo desarrollo
   logging: false,
-  entities: [Clientes, Productos, Factura, DetalleFactura, Usuario, Categorias],
+  entities: [
+    Clientes,
+    Productos,
+    Factura,
+    DetalleFactura,
+    Usuarios,
+    Categorias,
+  ],
 });
