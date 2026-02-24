@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { ClientesController } from "../controllers/ClientesController";
 import { validateRequest } from "../middleware/validateRequest";
-import { IdClienteParamDto } from "../dtos/idClientParamDto";
-import { ClienteCreateDto } from "../dtos/ClienteDto";
+import { IdClienteParamDto } from "../dtos/IdClientParamDto";
+import { ClienteCreateDto, ClienteUpdateDto } from "../dtos/ClienteDto";
 
 const ROUTES = Router();
 
@@ -13,11 +13,23 @@ ROUTES.get(
   ClientesController.getClienteById,
 );
 ROUTES.post(
-  "/ :id",
+  "/:id",
   validateRequest({ params: IdClienteParamDto, body: ClienteCreateDto }),
   ClientesController.createCliente,
 );
-ROUTES.patch("/:id", ClientesController.updateCliente);
-ROUTES.patch("/:id", ClientesController.reactivateCliente);
-ROUTES.delete("/:id", ClientesController.deleteCliente);
+ROUTES.patch(
+  "/:id",
+  validateRequest({ params: IdClienteParamDto, body: ClienteUpdateDto }),
+  ClientesController.updateCliente,
+);
+ROUTES.patch(
+  "/:id",
+  validateRequest({ params: IdClienteParamDto, body: ClienteUpdateDto }),
+  ClientesController.reactivateCliente,
+);
+ROUTES.delete(
+  "/:id",
+  validateRequest({ params: IdClienteParamDto }),
+  ClientesController.deleteCliente,
+);
 export default ROUTES;
