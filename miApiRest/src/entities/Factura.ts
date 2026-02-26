@@ -15,22 +15,34 @@ export class Factura {
   @Column({ type: "date", nullable: false })
   fecha: Date;
 
-  @Column()
-  subTotalFact: number;
+  @Column({
+    type: "decimal",
+    precision: 10,
+    scale: 2,
+    nullable: false,
+    default: 0,
+  })
+  subTotalFact: string;
 
   @Column({
     nullable: false,
     type: "decimal",
     precision: 10,
     scale: 2,
-    default: 0.13,
+    default: "0.13",
   })
-  impuestoAPagar: number;
+  impuestoAPagar: string;
 
-  @Column()
-  total: number;
+  @Column({
+    type: "decimal",
+    precision: 10,
+    scale: 2,
+    nullable: false,
+    default: "0",
+  })
+  total: string;
 
-  @Column()
+  @Column({ type: "boolean", nullable: false, default: true })
   estado: boolean;
   @ManyToOne(() => Clientes, (cliente) => cliente.facturas)
   @JoinColumn({ name: "idCliente" })

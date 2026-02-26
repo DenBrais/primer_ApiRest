@@ -15,7 +15,7 @@ export const AppDataSource = new DataSource({
   password: "4BraroApi2026", // ajusta
   //password: "4BraroDev2026",
   database: "braroapirest", // crea esta DB
-  synchronize: false, // solo desarrollo
+  synchronize: true, // solo desarrollo
   logging: false,
   entities: [
     Clientes,

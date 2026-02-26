@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { AppDataSource } from "../data-source";
 import { Productos } from "../entities/Productos";
+import { Categorias } from "../entities/Categorias";
 import { ProductosMapper } from "../mappers/ProductosMapper";
 
 export class ProductosController {
@@ -8,36 +9,7 @@ export class ProductosController {
   static createProducto = async (req: Request, res: Response) => {
     try {
       //destructuro los datos del body
-      const { nombre, precio, stock } = req.body;
-
-      /*validaciones de entrada*/
-
-      //valido nombre no nulo y no vacio
-      if (!nombre || nombre.length === 0) {
-        return res
-          .status(400)
-          .json({ message: "El nombre del producto es obligatorio" });
-      }
-
-      //precio no nulo, numwerico y mayor a 0
-      if (
-        precio === undefined ||
-        isNaN(Number(precio)) ||
-        Number(precio) <= 0
-      ) {
-        return res.status(400).json({
-          message:
-            "El precio del producto es obligatorio, debe ser un número y mayor a 0",
-        });
-      }
-
-      //stock no nulo, numwerico y mayor o igual a 0
-      if (stock === undefined || isNaN(Number(stock)) || Number(stock) < 0) {
-        return res.status(400).json({
-          message:
-            "El stock del producto es obligatorio, debe ser un número y mayor o igual a 0",
-        });
-      }
+      const { idCategoria, nombre, precio, stock } = req.body;
 
       /*reglas de negocio*/
 
@@ -49,10 +21,25 @@ export class ProductosController {
           .status(400)
           .json({ message: "El nombre del producto ya existe" });
       }
+
+      //valido si la categoría existe
+      if (idCategoria !== undefined) {
+        const categoriasRepo = AppDataSource.getRepository(Categorias);
+        const categoriaExiste = await categoriasRepo.findOneBy({
+          id: Number(idCategoria),
+        });
+        if (!categoriaExiste) {
+          return res.status(404).json({
+            message: `La categoría con id ${idCategoria} no existe`,
+          });
+        }
+      }
+
       //si no existe el producto, lo creo
       const nuevoProducto = repo.create({
+        idCategoria: idCategoria,
         nombre: nombre,
-        precio: Number(precio),
+        precio: precio,
         stock: Number(stock),
       });
 
@@ -60,12 +47,10 @@ export class ProductosController {
       await repo.save(nuevoProducto);
 
       //notifico que el producto se creó exitosamente
-      res
-        .status(201)
-        .json({
-          message: "Producto creado exitosamente",
-          producto: nuevoProducto,
-        });
+      res.status(201).json({
+        message: "Producto creado exitosamente",
+        producto: nuevoProducto,
+      });
     } catch (error) {
       return res.status(500).json({ message: "Error al crear el producto" });
     }
@@ -86,12 +71,10 @@ export class ProductosController {
           .json({ message: "No hay productos registrados" });
       }
 
-      res
-        .status(200)
-        .json({
-          message: "Lista de productos",
-          productos: ProductosMapper.toResponseDtoList(productos),
-        });
+      res.status(200).json({
+        message: "Lista de productos",
+        productos: ProductosMapper.toResponseDtoList(productos),
+      });
     } catch (error) {
       return res
         .status(500)
@@ -114,15 +97,13 @@ export class ProductosController {
       if (!producto) {
         return res
           .status(404)
-          .json({ message: `El producto con id ${id} no existe` });
+          .json({ message: `El producto con id ${id} no existe o ha sido eliminado` });
       }
 
-      res
-        .status(200)
-        .json({
-          message: "Producto encontrado",
-          producto: ProductosMapper.toResponseDto(producto),
-        });
+      res.status(200).json({
+        message: "Producto encontrado",
+        producto: ProductosMapper.toResponseDto(producto),
+      });
     } catch (error) {
       return res
         .status(500)
@@ -137,33 +118,8 @@ export class ProductosController {
       const { id } = req.params;
 
       //destructuro los datos del body
-      const { nombre, precio, stock } = req.body;
+      const { idCategoria, nombre, precio, stock } = req.body;
 
-      /*validaciones de entrada*/
-      //valido nombre no nulo y no vacio
-      if (nombre !== undefined && nombre.length === 0) {
-        return res
-          .status(400)
-          .json({ message: "El nombre del producto no puede estar vacío" });
-      }
-
-      //precio numwerico y mayor a 0
-      if (
-        precio !== undefined &&
-        (isNaN(Number(precio)) || Number(precio) <= 0)
-      ) {
-        return res.status(400).json({
-          message: "El precio del producto debe ser un número y mayor a 0",
-        });
-      }
-
-      //stock numerico y mayor a 0
-      if (stock !== undefined && (isNaN(Number(stock)) || Number(stock) < 0)) {
-        return res.status(400).json({
-          message:
-            "El stock del producto debe ser un número y mayor o igual a 0",
-        });
-      }
       /*reglas de negocio */
       //valido si existe el producto que quiero actualizar
       const repo = AppDataSource.getRepository(Productos);
@@ -192,21 +148,41 @@ export class ProductosController {
         }
       }
 
+      //valido si la categoría existe
+      if (idCategoria !== undefined) {
+        const categoriasRepo = AppDataSource.getRepository(Categorias);
+        const categoriaExiste = await categoriasRepo.findOneBy({
+          id: Number(idCategoria),
+        });
+        if (!categoriaExiste) {
+          return res.status(404).json({
+            message: `La categoría con id ${idCategoria} no existe`,
+          });
+        }
+      }
+
       //si el producto existe y el nuevo nombre no existe en otro producto, lo actualizo
-      productoToUpdate.nombre = nombre;
-      productoToUpdate.precio = precio;
-      productoToUpdate.stock = stock;
+      if (idCategoria !== undefined) {
+        productoToUpdate.idCategoria = Number(idCategoria);
+      }
+      if (nombre !== undefined) {
+        productoToUpdate.nombre = nombre;
+      }
+      if (precio !== undefined) {
+        productoToUpdate.precio = precio;
+      }
+      if (stock !== undefined) {
+        productoToUpdate.stock = Number(stock);
+      }
 
       //guardo los cambios en la base de datos
       await repo.save(productoToUpdate);
 
       //notifico que el producto se actualizó exitosamente
-      res
-        .status(200)
-        .json({
-          message: "Producto actualizado exitosamente",
-          producto: ProductosMapper.toResponseDto(productoToUpdate),
-        });
+      res.status(200).json({
+        message: "Producto actualizado exitosamente",
+        producto: ProductosMapper.toResponseDto(productoToUpdate),
+      });
     } catch (error) {
       return res
         .status(500)
@@ -216,24 +192,13 @@ export class ProductosController {
 
   //metodo delete
   static deleteProducto = async (req: Request, res: Response) => {
-    // Lógica para eliminar un producto
     try {
       //destructuro el id en los parámetros
       const { id } = req.params;
 
-      /*Validaciones de entrada */
-      //valido id obligatorio y numérico
-      if (!id || isNaN(Number(id))) {
-        return res.status(400).json({
-          message: "El id del producto es obligatorio y debe ser un número",
-        });
-      }
-
-      /*reglas de negocio*/
-
       // accedo al repositorio de productos
       const repo = AppDataSource.getRepository(Productos);
-      const producto = await repo.findOneBy({ id: Number(id), estado: true });
+      const producto = await repo.findOneBy({ id: Number(id) });
 
       //valido si el producto existe
       if (!producto) {
@@ -242,17 +207,22 @@ export class ProductosController {
           .json({ message: `El producto con id ${id} no existe` });
       }
 
+      //valido si el producto ya fue eliminado lógicamente
+      if (!producto.estado) {
+        return res.status(410).json({
+          message: `El producto con id ${id} ya ha sido eliminado`,
+        });
+      }
+
       //hago soft delete (eliminar lógicamente) cambiando el estado a false
       producto.estado = false;
       await repo.save(producto);
 
       //notifico que el producto se eliminó exitosamente
-      res
-        .status(200)
-        .json({
-          message: "Producto eliminado exitosamente",
-          producto: ProductosMapper.toResponseDto(producto),
-        });
+      res.status(200).json({
+        message: "Producto eliminado exitosamente",
+        producto: ProductosMapper.toResponseDto(producto),
+      });
     } catch (error) {
       return res.status(500).json({ message: "Error al eliminar el producto" });
     }
@@ -263,39 +233,35 @@ export class ProductosController {
     try {
       //destructuro el id en los parámetros
       const { id } = req.params;
-      /*Validaciones de entrada */
-      //valido id obligatorio y numérico
-      if (!id || isNaN(Number(id))) {
-        return res.status(400).json({
-          message: "El id del producto es obligatorio y debe ser un número",
-        });
-      }
 
       // accedo al repositorio de productos
       const repo = AppDataSource.getRepository(Productos);
       const productoToActivate = await repo.findOneBy({
         id: Number(id),
-        estado: false,
       });
 
-      //valido si el producto existe y está inactivo
+      //valido si el producto existe
       if (!productoToActivate) {
-        return res
-          .status(404)
-          .json({
-            message: `El producto con id ${id} no existe o ya está activo`,
-          });
+        return res.status(404).json({
+          message: `El producto con id ${id} no existe`,
+        });
       }
+
+      //valido si el producto está activo
+      if (productoToActivate.estado) {
+        return res.status(400).json({
+          message: `El producto con id ${id} ya está activo`,
+        });
+      }
+
       //reactivo el producto
       productoToActivate.estado = true;
       await repo.save(productoToActivate);
       //notifico que el producto se reactivó exitosamente
-      res
-        .status(200)
-        .json({
-          message: "Producto reactivado exitosamente",
-          producto: ProductosMapper.toResponseDto(productoToActivate),
-        });
+      res.status(200).json({
+        message: "Producto reactivado exitosamente",
+        producto: ProductosMapper.toResponseDto(productoToActivate),
+      });
     } catch (error) {
       return res
         .status(500)

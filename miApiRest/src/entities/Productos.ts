@@ -29,9 +29,9 @@ export class Productos {
     precision: 10,
     scale: 2,
     nullable: false,
-    default: 0,
+    default: "0",
   })
-  precio: number;
+  precio: string;
 
   @Column({ type: "int", nullable: false, default: 0 })
   stock: number;

@@ -2,7 +2,7 @@ import { Router } from "express";
 import { FacturaController } from "../controllers/FacturaController";
 import { validateRequest } from "../middleware/validateRequest";
 import { IdParamDto } from "../dtos/IdParamDto";
-import { FacturaUpdateDto } from "../dtos/FacturaDto";
+import { FacturaCreateDto, FacturaUpdateDto } from "../dtos/FacturaDto";
 
 const ROUTES = Router();
 
@@ -14,7 +14,7 @@ ROUTES.get(
 );
 ROUTES.post(
   "/",
-  validateRequest({ params: IdParamDto, body: FacturaUpdateDto }),
+  validateRequest({ body: FacturaCreateDto }),
   FacturaController.createFactura,
 );
 ROUTES.patch(

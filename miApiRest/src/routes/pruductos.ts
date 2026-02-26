@@ -8,7 +8,7 @@ const ROUTES = Router();
 
 ROUTES.post(
   "/",
-  validateRequest({ params: IdParamDto, body: ProductoCreateDto }),
+  validateRequest({ body: ProductoCreateDto }),
   ProductosController.createProducto,
 );
 

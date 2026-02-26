@@ -1,10 +1,4 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryColumn,
-} from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 import { Factura } from "./Factura";
 import { Productos } from "./Productos";
 
@@ -15,14 +9,14 @@ export class DetalleFactura {
   @PrimaryColumn()
   idProducto: number;
 
-  @Column({ type: "int", nullable: false })
-  cantidad: number;
+  @Column({ type: "decimal", precision: 10, scale: 2, nullable: false })
+  cantidad: string;
 
-  @Column({ type: "decimal", precision: 10, scale: 2 })
-  precioUnitario: number;
+  @Column({ type: "decimal", precision: 10, scale: 2, nullable: false })
+  precioUnitario: string;
 
-  @Column({ type: "decimal", precision: 10, scale: 2 })
-  subTotalDet: number;
+  @Column({ type: "decimal", precision: 10, scale: 2, nullable: false })
+  subTotalDet: string;
 
   @ManyToOne(() => Factura, (factura) => factura.detalles)
   @JoinColumn({ name: "idFactura" })
