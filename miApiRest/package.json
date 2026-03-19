@@ -1,5 +1,5 @@
 {
-  "name": "miApiRest",
+  "name": "miapirest",
   "version": "0.0.1",
   "description": "Awesome project developed with TypeORM.",
   "type": "commonjs",
@@ -9,5 +9,10 @@
   },
   "scripts": {
     "dev": "nodemon --exec ts-node src/app.ts"
-  }
+  },
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
+
